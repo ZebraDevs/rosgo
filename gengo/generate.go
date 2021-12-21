@@ -384,10 +384,10 @@ func (gen *MsgGen) analyzeImports() {
 
 LOOP:
 	for i, field := range gen.Fields {
-        // Binary is required to read the size of array
-        if field.IsArray {
-            gen.BinaryRequired = true
-        }
+		// Binary is required to read the size of array
+		if field.IsArray {
+		    gen.BinaryRequired = true
+		}
 
 		if len(field.Package) == 0 {
 			gen.BinaryRequired = true
