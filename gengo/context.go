@@ -30,28 +30,33 @@ func findPackages(pkgType string, rosPkgPaths []string) (map[string]string, erro
 		if err != nil {
 			continue
 		}
+		generateMsgs(p, pkgType, pkgs)
 		for _, f := range files {
 			if !f.IsDir() {
 				continue
 			}
 			pkgPath := filepath.Join(p, f.Name())
-			if isRosPackage(pkgPath) {
-				pkgName := filepath.Base(pkgPath)
-				msgPath := filepath.Join(pkgPath, pkgType)
-				msgPaths, err := filepath.Glob(msgPath + fmt.Sprintf("/*.%s", pkgType))
-				if err != nil {
-					continue
-				}
-				for _, m := range msgPaths {
-					basename := filepath.Base(m)
-					rootname := basename[:len(basename)-len(pkgType)-1]
-					fullname := pkgName + "/" + rootname
-					pkgs[fullname] = m
-				}
-			}
+			generateMsgs(pkgPath, pkgType, pkgs)
 		}
 	}
 	return pkgs, nil
+}
+
+func generateMsgs(pkgPath, pkgType string, pkgs map[string]string) {
+	if isRosPackage(pkgPath) {
+		pkgName := filepath.Base(pkgPath)
+		msgPath := filepath.Join(pkgPath, pkgType)
+		msgPaths, err := filepath.Glob(msgPath + fmt.Sprintf("/*.%s", pkgType))
+		if err != nil {
+			return
+		}
+		for _, m := range msgPaths {
+			basename := filepath.Base(m)
+			rootname := basename[:len(basename)-len(pkgType)-1]
+			fullname := pkgName + "/" + rootname
+			pkgs[fullname] = m
+		}
+	}
 }
 
 func findAllMessages(rosPkgPaths []string) (map[string]string, error) {
